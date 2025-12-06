@@ -21,8 +21,9 @@ jobs:
       # We create a fake one just for the build process.
       - name: Create Dummy .env
         run: |
+          - name: Create Dummy .env
           echo "NODE_ENV=test" >> .env
-          echo "MONGO_URI=mongodb://localhost:27017/test" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env 
           echo "JWT_ACCESS_SECRET=dummy_secret" >> .env
           echo "RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672" >> .env
           echo "AUTH_SERVICE_URL=http://auth-service:5000" >> .env
