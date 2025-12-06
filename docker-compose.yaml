@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  # 1. Message Queue (RabbitMQ) - Still runs locally
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: micro_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - micro_network
+
+  # 2. Auth Service (Uses Cloud DB)
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: micro_auth
+    ports:
+      - "5000:5000"
+    env_file: # <--- CHANGE THIS
+      - .env # This loads the file directly into the container
+    environment:
+      - PORT=5000 # We only keep PORT here
+    networks:
+      - micro_network
+
+  # Bot Service
+  bot-service:
+    build: ./bot-service
+    container_name: micro_bot
+    ports:
+      - "5003:5003"
+    env_file: # <--- CHANGE THIS
+      - .env
+    environment:
+      - PORT=5003
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - micro_network
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: micro_gateway
+    ports:
+      - "8000:8000"
+    env_file: # <--- CHANGE THIS
+      - .env
+    environment:
+      - PORT=8000
+      - CLIENT_URL=http://localhost:3000
+      - AUTH_SERVICE_URL=http://auth-service:5000
+      - BOT_SERVICE_URL=http://bot-service:5003
+    depends_on:
+      - auth-service
+      - bot-service
+    networks:
+      - micro_network
+
+networks:
+  micro_network:
+    driver: bridge

@@ -1,0 +1,36 @@
+name: Microservices Build Test
+
+# 1. When to run? (On every push to main branch)
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest # Runs on a virtual Linux machine hosted by GitHub
+
+    steps:
+      # A. Check out your code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # B. Create a Dummy .env file
+      # Since we gitignored your real .env, Docker will crash if it can't find one.
+      # We create a fake one just for the build process.
+      - name: Create Dummy .env
+        run: |
+          echo "NODE_ENV=test" >> .env
+          echo "MONGO_URI=mongodb://localhost:27017/test" >> .env
+          echo "JWT_ACCESS_SECRET=dummy_secret" >> .env
+          echo "RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672" >> .env
+          echo "AUTH_SERVICE_URL=http://auth-service:5000" >> .env
+          echo "BOT_SERVICE_URL=http://bot-service:5003" >> .env
+          echo "PRODUCT_SERVICE_URL=http://product-service:5001" >> .env
+          echo "CLIENT_URL=http://localhost:3000" >> .env
+
+      # C. Test the Build
+      # If your Dockerfiles are broken, this step will fail and alert you.
+      - name: Build Docker Images
+        run: docker-compose build
