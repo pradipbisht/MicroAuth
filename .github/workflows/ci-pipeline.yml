@@ -34,4 +34,4 @@ jobs:
       # C. Test the Build
       # If your Dockerfiles are broken, this step will fail and alert you.
       - name: Build Docker Images
-        run: docker-compose build
+        run: docker compose build
