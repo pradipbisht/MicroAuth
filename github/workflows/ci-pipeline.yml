@@ -9,6 +9,7 @@ on:
 
 jobs:
   build-test:
+    name: Build Docker Containers
     runs-on: ubuntu-latest # Runs on a virtual Linux machine hosted by GitHub
 
     steps:
@@ -21,9 +22,8 @@ jobs:
       # We create a fake one just for the build process.
       - name: Create Dummy .env
         run: |
-          - name: Create Dummy .env
           echo "NODE_ENV=production" >> .env
-          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env 
+          echo "MONGO_URI=mongodb://localhost:27017/test_db" >> .env 
           echo "JWT_ACCESS_SECRET=your_super_secret_access_key" >> .env
           echo "RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672" >> .env
           echo "AUTH_SERVICE_URL=http://auth-service:5000" >> .env
