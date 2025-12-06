@@ -22,9 +22,9 @@ jobs:
       - name: Create Dummy .env
         run: |
           - name: Create Dummy .env
-          echo "NODE_ENV=test" >> .env
+          echo "NODE_ENV=production" >> .env
           echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env 
-          echo "JWT_ACCESS_SECRET=dummy_secret" >> .env
+          echo "JWT_ACCESS_SECRET=your_super_secret_access_key" >> .env
           echo "RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672" >> .env
           echo "AUTH_SERVICE_URL=http://auth-service:5000" >> .env
           echo "BOT_SERVICE_URL=http://bot-service:5003" >> .env
